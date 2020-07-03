@@ -1,0 +1,51 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+
+{# SHOPPING COMPLETE #}
+<section class="ftco-section">
+    <form id="shopping-form" method="post" action="{{ url('shopping_confirm') }}">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="row ftco-animate">
+                <div class="col-md-10 offset-md-1">
+                    <h2>{{ 'front.shopping.complete_message__title'|trans }}</h2>
+                </div>
+                <div class="col-md-10 offset-md-1">
+                    <p class="ec-reportDescription">
+                    {{ 'front.shopping.complete_message__body'|trans|nl2br }}
+                    {% if Order.id %}
+                        <br /><br /><strong>{{ 'front.shopping.order_no'|trans }} : {{ Order.orderNo }}</strong>
+                    {% endif %}
+                    </p>
+                    {% if Order.complete_message is not empty %}
+                        {{ Order.complete_message|raw }}
+                    {% endif %}
+                </div>
+                <div class="col-md-10 offset-md-1">
+                    <div class="ec-off4Grid">
+                        {% if hasNextCart %}
+                            <div class="ec-off4Grid__cell"><a class="ec-blockBtn--primary" href="{{ url('cart') }}">{{ 'front.shopping.continue'|trans }}</a></div>
+                        {% else %}
+                            <div class="ec-off4Grid__cell"><a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">{{ 'common.go_to_top'|trans }}</a></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{# SHOPPING COMPLETE #}
+{% endblock %}

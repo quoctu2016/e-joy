@@ -1,0 +1,3 @@
+1593753850
+eccube_entity_master_saletype%255Beccube_entity_master_saletype_eccube.entity.master.saletype_2%255D%255B1%255D
+O:35:"Doctrine\ORM\Cache\EntityCacheEntry":2:{s:4:"data";a:3:{s:2:"id";i:2;s:4:"name";s:8:"Loại B";s:7:"sort_no";i:1;}s:5:"class";s:29:"Eccube\Entity\Master\SaleType";}

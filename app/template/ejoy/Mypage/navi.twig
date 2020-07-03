@@ -1,0 +1,49 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link {% if mypageno|default('') == 'index' %}active{% endif %}" 
+            href="{{ url('mypage') }}"
+            role="tab" aria-controls="nav-home" aria-selected="true">
+            {{ 'front.mypage.nav__history'|trans }}
+        </a>
+        {% if false and BaseInfo.option_favorite_product %}
+            <a class="nav-item nav-link {% if mypageno|default('') == 'favorite' %}active{% endif %}" 
+                href="{{ url('mypage_favorite') }}"
+                role="tab" aria-controls="nav-home" aria-selected="true">
+                {{ 'front.mypage.nav__favorite'|trans }}
+            </a>
+        {% endif %}
+        <a class="nav-item nav-link {% if mypageno|default('') == 'change' %}active{% endif %}" 
+            href="{{ url('mypage_change') }}"
+            role="tab" aria-controls="nav-home" aria-selected="true">
+            {{ 'front.mypage.nav__customer'|trans }}
+        </a>
+        <a class="nav-item nav-link {% if mypageno|default('') == 'delivery' %}active{% endif %}" 
+            href="{{ url('mypage_delivery') }}"
+            role="tab" aria-controls="nav-home" aria-selected="true">
+            {{ 'front.mypage.nav__customer_address'|trans }}
+        </a>
+        <a class="nav-item nav-link {% if mypageno|default('') == 'withdraw' %}active{% endif %}" 
+            href="{{ url('mypage_withdraw') }}"
+            role="tab" aria-controls="nav-home" aria-selected="true">
+            {{ 'front.mypage.nav__withdrow'|trans }}
+        </a>
+    </div>
+</nav>
+
+<div class="ec-welcomeMsg">
+    <p>{{ 'front.mypage.welcome'|trans }} {{ app.user.name01|format_name(app.user.name02) }}</p>
+    {% if BaseInfo.option_point %}
+        <p>{{ 'front.mypage.welcome__point'|trans({ '%point%': app.user.point|number_format}) }}</p>
+    {% endif %}
+</div>
+

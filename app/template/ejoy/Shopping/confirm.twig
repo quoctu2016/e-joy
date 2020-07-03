@@ -1,0 +1,144 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block main %}
+    <section class="ftco-section">
+        <form id="shopping-form" method="post" action="{{ url('shopping_checkout') }}">
+            {{ form_widget(form._token) }}
+            <div class="container">
+                <div class="justify-content-center">
+                    <div class="row ftco-animate">
+                        <div class="col-md-12 offset-md-1">
+                            <h2>{{ 'front.shopping.confirm_title'|trans }}</h2>
+                        </div>
+                        <div class="col-md-6 offset-md-1">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>{{ 'front.shopping.customer_info'|trans }}</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="ec-orderAccount__account non-customer-display">
+                                        <p class="ec-halfInput">{{ 'common.name'|trans }}: <span class="customer-edit customer-name01">{{ Order.name01 }}</span> <span class="customer-edit customer-name02">{{ Order.name02 }}</span>{{ 'common.name.suffix'|trans }}</p>
+                                        <p class="ec-halfInput" style="display: none"><span class="customer-edit customer-kana01">{{ Order.kana01 }}</span> <span class="customer-edit customer-kana02">{{ Order.kana02 }}</span></p>
+                                        <p class="ec-input">{{ 'common.address'|trans }}: <span class="customer-edit customer-addr02">{{ Order.addr02 }}</span> <span class="customer-edit customer-addr01">{{ Order.addr01 }}</span> <span class="customer-edit customer-pref">{{ Order.pref }}</span></p>
+                                        <p class="ec-telInput">{{ 'common.phone_number'|trans }}: <span class="customer-edit customer-phone_number">{{ Order.phone_number }}</span></p>
+                                        <p class="ec-input">{{ 'common.mail_address'|trans }}: <span class="customer-edit customer-email">{{ Order.email }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h4>{{ 'front.shopping.delivery_info'|trans }}</h4>
+                                </div>
+                                <div class="card-body">
+                                    {% for shipping in Order.shippings %}
+                                        {% set idx = loop.index0 %}
+                                        <div class="ec-orderDelivery__address">
+                                            <p>{{ shipping.name01|format_name(shipping.name02) }}</p>
+                                            <p>{{ format_address(shipping.addr01, shipping.addr02, shipping.pref, shipping.postal_code) }}</p>
+                                            <p>{{ shipping.phone_number }}</p>
+                                        </div>
+                                        <div class="ec-orderDelivery__actions">
+                                            <div class="ec-selects">
+                                                <div class="ec-select">
+                                                    <label>{{ 'front.shopping.delivery_provider'|trans }}: </label>
+                                                    {% set delivery_fee = 0 %}
+                                                    {% for item in shipping.order_items if item.isDeliveryFee %}
+                                                        {% set delivery_fee = item.total_price %}
+                                                    {% endfor %}
+                                                    {{ Order.Shippings[idx].Delivery }} ({{ delivery_fee|price }})
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h4>{{ 'front.shopping.payment_info'|trans }}</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="ec-blockRadio">
+                                        {% set charge = 0 %}
+                                        {% for item in Order.order_items if item.isCharge %}
+                                            {% set charge = item.total_price %}
+                                        {% endfor %}
+                                        {{ Order.Payment }} ({{ charge|price }})
+                                    </div>
+                                    {% if BaseInfo.isOptionPoint and Order.Customer is not null %}
+                                        <div class="ec-blockRadio">
+                                            {{ Order.use_point|number_format }} {{ 'common.point'|trans }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ec-input {{ has_errors(form.Payment) ? ' error' }}">{{ form_errors(form.Payment) }}</div>
+                            </div>
+                            {% if Order.message %}
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h2>{{ 'front.shopping.message_info'|trans }}</h2>
+                                </div>
+                                <div class="card-body">
+                                    {{ Order.message|nl2br }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">{{ 'common.subtotal'|trans }}</label>
+                                        <span class="float-right">{{ Order.subtotal|price }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">{{ 'common.charge'|trans }}</label>
+                                        <span class="float-right">{{ Order.charge|price }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">{{ 'common.delivery_fee'|trans }}</label>
+                                        <span class="float-right">{{ Order.deliveryFeeTotal|price }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">{{ 'common.discount'|trans }}</label>
+                                        <span class="float-right">{{ (0 - Order.discount)|price }}</span>
+                                    </div>
+                                    <div><label class="font-weight-bold">{{ 'common.total'|trans }}</label><span class="float-right">{{ Order.total|price }} {{ 'common.tax_include'|trans }}</span></div>
+                                    <hr>
+                                    {% if BaseInfo.isOptionPoint and Order.Customer is not null %}
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">{{ 'front.shopping.use_point'|trans }}</label>
+                                            <span class="float-right">{{ Order.UsePoint|number_format }} {{ 'common.point'|trans }}</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="font-weight-bold"><span class="ec-font-bold">{{ 'front.shopping.add_point'|trans }}</span></label>
+                                            <span class="float-right"><span class="ec-font-bold">{{ Order.AddPoint|number_format }} {{ 'common.point'|trans }}</span></span>
+                                        </div>
+                                    {% endif %}
+                                    </div>
+                                    <div class="card-footer text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg">{{ 'front.shopping.go_to_confirm'|trans }}</button>
+                                        <br> <a href="{{ url('shopping') }}" class="ec-blockBtn--cancel">{{ 'front.shopping.back_to_order'|trans }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+{% endblock %}

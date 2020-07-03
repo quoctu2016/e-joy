@@ -1,0 +1,100 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% form_theme form 'Form/form_div_layout.twig' %}
+
+{% block javascript %}
+<script src="{{ asset('assets/js/postalcode.js') }}" charset="UTF-8"></script>
+<script>
+$(function() {
+    $('#nonmember_email_second').attr('required', false);
+    $('form').on('submit', function() {
+        $('#nonmember_email_second').val($('#nonmember_email_first').val());
+    })
+})
+</script>
+{% endblock javascript %}
+
+{% block main %}
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 ftco-animate">
+                    <h1>{{ 'front.shopping.nonmember'|trans }}</h1>
+                    <form method="post" action="{{ url('shopping_nonmember') }}" class="h-adr">
+                        <div class="form-group">
+                            {{ form_widget(form._token) }}
+                        </div>
+                        <div class="row align-items-end">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.name, 'common.name', { 'label_attr': { 'class': 'ec-label' }}) }}
+                            {{ form_widget(form.name.name02, { 'attr': { 'class': 'form-control', 'placeholder': 'common.first_name' }}) }}
+                            {{ form_errors(form.name.name02) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(form.name.name01, { 'attr': { 'class': 'form-control', 'placeholder': 'common.last_name' }}) }}
+                            {{ form_errors(form.name.name01) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(form.kana.kana01, { type : 'hidden', value: 'カナ'}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(form.kana.kana02, { type : 'hidden', value: 'カナ'}) }}
+                        </div>
+                        <div class="ec-input{{ has_errors(form.email.first) ? ' error' }}">
+                            <div class="form-group">
+                                {{ form_label(form.email, 'common.mail_address', { 'label_attr': { 'class': 'ec-label' }}) }}
+                                {{ form_widget(form.email.first, { 'attr': { 'class': 'form-control', 'placeholder': 'common.mail_address_sample' }}) }}
+                            </div>
+                            {{ form_errors(form.email.first) }}
+                        </div>
+                        <div class="d-none ec-input{{ has_errors(form.email.second) ? ' error' }}">
+                            <div class="form-group">
+                                {{ form_widget(form.email.second, { 'attr': { 'class': 'form-control', 'placeholder': 'common.repeated_confirm' }}) }}
+                            </div>
+                            {{ form_errors(form.email.second) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.phone_number, 'common.phone_number', { 'label_attr': { 'class': 'ec-label' }}) }}
+                            {{ form_widget(form.phone_number, { 'attr': { 'class': 'form-control'}}) }}
+                            {{ form_errors(form.phone_number) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.address, 'common.address', { 'label_attr': { 'class': 'ec-label' }}) }}
+                            {{ form_widget(form.address.pref, { 'attr': { 'class': 'form-control'}}) }}
+                            {{ form_errors(form.address.pref) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(form.address.addr01, { 'attr': { 'class': 'form-control', 'placeholder': 'common.address_sample_01' }}) }}
+                            {{ form_errors(form.address.addr01) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_widget(form.address.addr02,  { 'attr': { 'class': 'form-control', 'placeholder': 'common.address_sample_02' }}) }}
+                            {{ form_errors(form.address.addr02) }}
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-info btn-lg">{{ 'common.next'|trans }}</button>
+                            <a class="ec-blockBtn--cancel" href="{{ url('cart') }}">{{ 'common.back'|trans }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

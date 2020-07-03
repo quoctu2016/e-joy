@@ -1,0 +1,33 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'cart_page' %}
+
+{% block main %}
+<!-- アラートメッセージ -->
+{{ include('Shopping/alert.twig', { 'error_only': true }) }}
+<section class="ftco-section ftco-counter img" id="section-counter" style="background-image: url(/html/template/default/assets/images/bg_4.jpg); height: 300px;">
+    <div class="container">
+    </div>
+</section>
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="row ftco-animate">
+                <div class="col-md-12 text-center">
+                <h1>{{ 'front.shopping.error'|trans }}</h1>
+                <a class="ec-blockBtn--cancel" href="{{ url('cart') }}">{{ 'front.shopping.back_to_cart'|trans }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

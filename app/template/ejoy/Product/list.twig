@@ -1,0 +1,203 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+
+http://www.lockon.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set body_class = 'product_page' %}
+
+{% block javascript %}
+    <script>
+        $(function() {
+            $('.disp-number').change(function() {
+                var dispNumber = $(this).val();
+                $('#disp_number').val(dispNumber);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            // 並び順を変更
+            $('.order-by').change(function() {
+                var orderBy = $(this).val();
+                $('#orderby').val(orderBy);
+                $('#pageno').val(1);
+                $("#form1").submit();
+            });
+
+            $('.add-to-cart').on('click', function(e) {
+				if ($(this).hasClass('detail'))  {
+					return;
+				}
+                var $form = $('#productForm' + $(this).data('id'));
+
+                // 個数フォームのチェック
+                var $quantity = $form.parent().find('.quantity');
+                if ($quantity.val() < 1) {
+                    {# $quantity[0].setCustomValidity('{{ 'front.product.invalid_quantity'|trans }}'); #}
+                    setTimeout(function() {
+                        loadingOverlay('hide');
+                    }, 100);
+                    return true;
+                } else {
+                    {# $quantity[0].setCustomValidity(''); #}
+                }
+                e.preventDefault();
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: $form.attr('method'),
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    beforeSend: function(xhr, settings) {
+                        // Buttonを無効にする
+                        $('.add-cart').prop('disabled', true);
+                    }
+                }).done(function(data) {
+                    // レスポンス内のメッセージをalertで表示
+                    $.each(data.messages, function() {
+                        $('#ec-modal-header').html(this);
+                    });
+
+                    $('#ec-modal-checkbox').prop('checked', true);
+					alert(data.messages[0]);
+
+                    // カートブロックを更新する
+                    $.ajax({
+                        url: '{{ url('block_cart') }}',
+                        type: 'GET',
+                        dataType: 'html'
+                    }).done(function(html) {
+                        $('.ec-headerRole__cart').html(html);
+                        var f = html.split('<span class="ec-cartNavi__badge">')[1];
+                        var ff = f.split('</span>')[0];
+                        $('.nav-item.cta.cta-colored>a').html('<span class="icon-shopping_cart"></span> ['+ff+']');
+                    });
+                }).fail(function(data) {
+                    alert('{{ 'front.product.add_cart_error'|trans }}');
+                }).always(function(data) {
+                    // Buttonを有効にする
+                    $('.add-cart').prop('disabled', false);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block main %}
+    <form name="form1" id="form1" method="get" action="?">
+        {% for item in search_form %}
+            <input type="hidden" id="{{ item.vars.id }}"
+                name="{{ item.vars.full_name }}"
+                {% if item.vars.value is not empty %}value="{{ item.vars.value }}" {% endif %}/>
+        {% endfor %}
+    </form>
+    <div class="hero-wrap hero-bread" style="background-image: url('{{asset('assets/images/bg_6.jpg')}}');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+            <h1 class="mb-0 bread">{{ Category.name }}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section bg-light">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-md-12 col-lg-12 order-md-last">
+    				<div class="row">
+                    <div class="col-md-12 ec-searchnavRole__infos">
+                        <div class="ec-searchnavRole__counter">
+                            {% if pagination.totalItemCount > 0 %}
+                                {{ 'front.product.search_result__detail'|trans({ '%count%': pagination.totalItemCount })|raw }}
+                            {% else %}
+                                <span>{{ 'front.product.search__product_not_found'|trans }}</span>
+                            {% endif %}
+                        </div>
+                        {% if pagination.totalItemCount > 0 %}
+                            <div class="ec-searchnavRole__actions row">
+                                <div class="ec-select row float-right">
+                                    <div class="col-md-6 d-none d-md-block">
+                                    {{ form_widget(disp_number_form, {'id': '', 'attr': {'class': 'disp-number'}}) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                    {{ form_widget(order_by_form, {'id': '', 'attr': {'class': 'order-by float-right'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <hr>
+                    </div>
+					{% for product in pagination %}
+		    			<div class="col-sm-6 col-md-6 col-lg-3 ftco-animate">
+		    				<div class="product">
+		    					<a href="{{ url('product_detail', {'id': product.id}) }}" class="img-prod">
+									<img class="img-fluid" src="{{ asset(product.main_list_image|no_image_product, 'save_image') }}" alt="Colorlib Template">
+		    						<span class="status d-none">30%</span>
+		    						<div class="overlay"></div>
+		    					</a>
+		    					<div class="text py-3 px-3">
+		    						<h3><a href="{{ url('product_detail', {'id': product.id}) }}">{{ product.name }}</a></h3>
+		    						<div class="d-flex">
+		    							<div class="pricing">
+				    						<p class="price">
+												<span class="mr-2 price-dc d-none">{{ product.getPrice02IncTaxMax|price }}</span>
+												<span class="price-sale">{{ product.getPrice02IncTaxMax|price }}</span>
+											</p>
+				    					</div>
+				    					<div class="rating d-none">
+			    							<p class="text-right">
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    							</p>
+			    						</div>
+			    					</div>
+			    					<p class="bottom-area d-flex px-3">
+										{% set form = forms[product.id] %}
+										{% if form.classcategory_id1 is defined %}
+											<a href="{{ url('product_detail', {'id': product.id}) }}" class="add-to-cart detail text-center py-2 mr-1" data-id="{{product.id}}"><span>{{ 'front.mypage.view_detail'|trans }} <i class="ion-ios-eye ml-1"></i></span></a>
+										{% else %}
+											<a href="#" class="add-to-cart text-center py-2 mr-1" data-id="{{product.id}}"><span>{{ 'front.product.add_cart'|trans }} <i class="ion-ios-add ml-1"></i></span></a>
+										{% endif %}
+		    							{# <a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a> #}
+										<form class="d-none" name="form{{ product.id }}" id="productForm{{ product.id }}" action="{{ url('product_add_cart', {id:product.id}) }}" method="post">
+											<div class="ec-productRole__actions">
+												{% if form.classcategory_id1 is defined %}
+													<div class="ec-select">
+														{{ form_widget(form.classcategory_id1) }}
+														{{ form_errors(form.classcategory_id1) }}
+													</div>
+													{% if form.classcategory_id2 is defined %}
+														<div class="ec-select">
+															{{ form_widget(form.classcategory_id2) }}
+															{{ form_errors(form.classcategory_id2) }}
+														</div>
+													{% endif %}
+												{% endif %}
+												<div class="ec-numberInput"><span>{{ 'common.quantity'|trans }}</span>
+													{{ form_widget(form.quantity, {'attr': {'class': 'quantity'}}) }}
+													{{ form_errors(form.quantity) }}
+												</div>
+											</div>
+											{{ form_rest(form) }}
+										</form>
+		    						</p>
+		    					</div>
+		    				</div>
+		    			</div>
+						{% endfor %}
+		    		</div>
+					{% include "pager.twig" with {'pages': pagination.paginationData} %}
+		    	</div>
+    		</div>
+    	</div>
+    </section>
+{% endblock %}

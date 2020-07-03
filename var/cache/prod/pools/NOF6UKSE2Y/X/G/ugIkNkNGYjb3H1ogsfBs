@@ -1,0 +1,3 @@
+1593753811
+eccube_entity_master_pref%255Beccube_entity_master_pref_eccube.entity.master.pref_54%255D%255B1%255D
+O:35:"Doctrine\ORM\Cache\EntityCacheEntry":2:{s:4:"data";a:3:{s:2:"id";i:54;s:4:"name";s:9:"Trà Vinh";s:7:"sort_no";i:54;}s:5:"class";s:25:"Eccube\Entity\Master\Pref";}

@@ -1,0 +1,3 @@
+1593753945
+eccube_entity_master_customerstatus%255Beccube_entity_master_customerstatus_b6b178be658e07754041dada753e3b644751d297%255D%255B1%255D
+O:34:"Doctrine\ORM\Cache\QueryCacheEntry":2:{s:6:"result";a:2:{i:0;a:2:{s:10:"identifier";a:1:{s:2:"id";i:1;}s:12:"associations";a:0:{}}i:1;a:2:{s:10:"identifier";a:1:{s:2:"id";i:2;}s:12:"associations";a:0:{}}}s:4:"time";d:1593750345.296413;}
